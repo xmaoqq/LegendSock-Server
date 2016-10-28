@@ -36,7 +36,7 @@ echo "|                    LegendSock server for CentOS                    |";
 echo "+--------------------------------------------------------------------+";
 echo "|   For more information please visit https://www.legendsock.com     |";
 echo "+--------------------------------------------------------------------+";
-echo "|                     `Echo_Blue "Press any key to uninstall"`                     |";
+echo "|                      `Echo_Blue "Press any key to upgrade"`                      |";
 echo "+--------------------------------------------------------------------+";
 OLDCONFIG=`stty -g`;
 stty -icanon -echo min 1 time 0;
@@ -44,13 +44,32 @@ dd count=1 2>/dev/null;
 stty ${OLDCONFIG};
 clear
 
-echo "Remove the legendsock file and directory...";
-rm -rf /usr/local/legendsock /usr/bin/legendsock
-echo "Remove the boot entry...";
-sed -i "s#"/usr/local/legendsock/start.sh"#""#g" /etc/rc.local;
+FILENAME='legendsock.tar.gz';
+echo "Downloading LegendSock server...";
+yum install wget -y;
+wget -c https://www.legendsock.com/box/server/$FILENAME -O /tmp/$FILENAME;
+if [ -f "/tmp/${FILENAME}" ]; then
+    echo "Stoping LegendSock Server...";
+    /usr/bin/legendsock stop;
+
+    echo "Backup your configure...";
+    mv /usr/local/legendsock/usermysql.json /tmp;
+
+    echo "Extract the file...";
+    tar zvxf /tmp/$FILENAME -C /usr/local/;
+
+    echo "Restore your configure...";
+    mv /tmp/usermysql.json /usr/local/legendsock;
+
+    echo "Upgrade your command file...";
+    mv /usr/local/legendsock/legendsock /usr/bin/legendsock;
+else
+  echo "File download failed";
+  exit 1;
+fi
 
 clear
-Echo_Blue "LegendSock has been removed.";
+Echo_Blue "LegendSock has been upgrade.";
 echo "";
 Echo_Blue "Website: https://www.legendsock.com";
 

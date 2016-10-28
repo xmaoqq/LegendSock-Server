@@ -34,6 +34,15 @@ chmod +x /tmp/uninstall.sh;
 ```
 执行后按照提示输入相应的信息完成安装即可。
 
+## 升级方法
+在 Terminal 中执行如下命令:
+```
+wget -O /tmp/upgrade.sh https://www.legendsock.com/box/server/upgrade.txt;
+chmod +x /tmp/upgrade.sh;
+/tmp/upgrade.sh;
+```
+执行后按照提示开始升级即可。
+
 ## 使用方法
 在 Terminal 中可选执行如下命令:
 ```

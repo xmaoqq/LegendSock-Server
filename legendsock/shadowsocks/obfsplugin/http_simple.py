@@ -153,11 +153,19 @@ class http_simple(plain.plain):
                 return ret_buf
         return b''
 
+    def get_host_from_http_header(self, buf):
+        ret_buf = b''
+        lines = buf.split(b'\r\n')
+        if lines and len(lines) > 4:
+            for line in lines:
+                if match_begin(line, b"Host: "):
+                    return line[6:]
+
     def not_match_return(self, buf):
         self.has_sent_header = True
         self.has_recv_header = True
         if self.method == 'http_simple':
-            return (b'E'*64, False, False)
+            return (b'E'*2048, False, False)
         return (buf, True, False)
 
     def server_decode(self, buf):
@@ -182,6 +190,14 @@ class http_simple(plain.plain):
         if b'\r\n\r\n' in buf:
             datas = buf.split(b'\r\n\r\n', 1)
             ret_buf = self.get_data_from_http_header(buf)
+            host = self.get_host_from_http_header(buf)
+            if host and self.server_info.obfs_param:
+                pos = host.find(":")
+                if pos >= 0:
+                    host = host[:pos]
+                hosts = self.server_info.obfs_param.split(',')
+                if host not in hosts:
+                    return self.not_match_return(buf)
             if len(datas) > 1:
                 ret_buf += datas[1]
             if len(ret_buf) >= 7:
@@ -235,7 +251,7 @@ class http_post(http_simple):
         self.has_sent_header = True
         self.has_recv_header = True
         if self.method == 'http_post':
-            return (b'E'*64, False, False)
+            return (b'E'*2048, False, False)
         return (buf, True, False)
 
 class random_head(plain.plain):
@@ -284,7 +300,7 @@ class random_head(plain.plain):
         if crc != 0xffffffff:
             self.has_sent_header = True
             if self.method == 'random_head':
-                return (b'E'*64, False, False)
+                return (b'E'*2048, False, False)
             return (buf, True, False)
         # (buffer_to_recv, is_need_decrypt, is_need_to_encode_and_send_back)
         return (b'', False, True)

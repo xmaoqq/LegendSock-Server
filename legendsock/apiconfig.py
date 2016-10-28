@@ -11,5 +11,3 @@ MYSQL_CONFIG = 'usermysql.json'
 
 # API
 MUAPI_CONFIG = 'usermuapi.json'
-
-

@@ -258,7 +258,7 @@ class DbTransfer(TransferBase):
 	def update_all_user(self, dt_transfer):
 		import cymysql
 		update_transfer = {}
-		
+
 		query_head = 'UPDATE user'
 		query_sub_when = ''
 		query_sub_when2 = ''
@@ -423,7 +423,7 @@ class Dbv3Transfer(DbTransfer):
 #			cur = conn.cursor()
 #			cur.execute("INSERT INTO `ss_node_online_log` (`id`, `node_id`, `online_user`, `log_time`) VALUES (NULL, '" + \
 #					str(self.cfg["node_id"]) + "', '" + str(alive_user_count) + "', unix_timestamp()); ")
-			cur.close()
+#			cur.close()
 #
 #			cur = conn.cursor()
 #			cur.execute("INSERT INTO `ss_node_info_log` (`id`, `node_id`, `uptime`, `load`, `log_time`) VALUES (NULL, '" + \
@@ -538,4 +538,3 @@ class MuJsonTransfer(TransferBase):
 		if not rows:
 			logging.warn('no user in json file')
 		return rows
-

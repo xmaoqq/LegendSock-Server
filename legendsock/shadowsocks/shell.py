@@ -54,13 +54,30 @@ def print_exception(e):
 
 
 def print_shadowsocks():
-    version = ''
+    version_str = ''
     try:
         import pkg_resources
-        version = pkg_resources.get_distribution('shadowsocks').version
+        version_str = pkg_resources.get_distribution('shadowsocks').version
     except Exception:
-        pass
-    print('Shadowsocks %s' % version)
+        try:
+            from shadowsocks import version
+            version_str = version.version()
+        except Exception:
+            pass
+    print('ShadowsocksR %s' % version_str)
+
+def log_shadowsocks_version():
+    version_str = ''
+    try:
+        import pkg_resources
+        version_str = pkg_resources.get_distribution('shadowsocks').version
+    except Exception:
+        try:
+            from shadowsocks import version
+            version_str = version.version()
+        except Exception:
+            pass
+    logging.info('ShadowsocksR %s' % version_str)
 
 def find_config():
     config_path = 'user-config.json'
@@ -136,11 +153,11 @@ def get_config(is_local):
     logging.basicConfig(level=logging.INFO,
                         format='%(levelname)-s: %(message)s')
     if is_local:
-        shortopts = 'hd:s:b:p:k:l:m:P:o:G:g:c:t:vq'
+        shortopts = 'hd:s:b:p:k:l:m:O:o:G:g:c:t:vq'
         longopts = ['help', 'fast-open', 'pid-file=', 'log-file=', 'user=',
                     'version']
     else:
-        shortopts = 'hd:s:p:k:m:P:o:G:g:c:t:vq'
+        shortopts = 'hd:s:p:k:m:O:o:G:g:c:t:vq'
         longopts = ['help', 'fast-open', 'pid-file=', 'log-file=', 'workers=',
                     'forbidden-ip=', 'user=', 'manager-address=', 'version']
     try:
@@ -174,7 +191,7 @@ def get_config(is_local):
                 config['server'] = to_str(value)
             elif key == '-m':
                 config['method'] = to_str(value)
-            elif key == '-P':
+            elif key == '-O':
                 config['protocol'] = to_str(value)
             elif key == '-o':
                 config['obfs'] = to_str(value)

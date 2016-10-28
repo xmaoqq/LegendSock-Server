@@ -84,7 +84,14 @@ class tls_ticket_auth(plain.plain):
         if self.handshake_status == -1:
             return buf
         if self.handshake_status == 8:
-            return b"\x17" + self.tls_version + struct.pack('>H', len(buf)) + buf
+            ret = b''
+            while len(buf) > 2048:
+                size = min(struct.unpack('>H', os.urandom(2))[0] % 4096 + 100, len(buf))
+                ret += b"\x17" + self.tls_version + struct.pack('>H', size) + buf[:size]
+                buf = buf[size:]
+            if len(buf) > 0:
+                ret += b"\x17" + self.tls_version + struct.pack('>H', len(buf)) + buf
+            return ret
         self.send_buffer += b"\x17" + self.tls_version + struct.pack('>H', len(buf)) + buf
         if self.handshake_status == 0:
             self.handshake_status = 1
@@ -149,9 +156,10 @@ class tls_ticket_auth(plain.plain):
             return buf
         if self.handshake_status == 8:
             ret = b''
-            while len(buf) > 8192:
-                ret += b"\x17" + self.tls_version + struct.pack('>H', 8192) + buf[:8192]
-                buf = buf[8192:]
+            while len(buf) > 2048:
+                size = min(struct.unpack('>H', os.urandom(2))[0] % 4096 + 100, len(buf))
+                ret += b"\x17" + self.tls_version + struct.pack('>H', size) + buf[:size]
+                buf = buf[size:]
             if len(buf) > 0:
                 ret += b"\x17" + self.tls_version + struct.pack('>H', len(buf)) + buf
             return ret
@@ -167,7 +175,7 @@ class tls_ticket_auth(plain.plain):
     def decode_error_return(self, buf):
         self.handshake_status = -1
         if self.method == 'tls1.2_ticket_auth':
-            return (b'E'*64, False, False)
+            return (b'E'*2048, False, False)
         return (buf, True, False)
 
     def server_decode(self, buf):
@@ -178,7 +186,7 @@ class tls_ticket_auth(plain.plain):
             ret = b''
             self.recv_buffer += buf
             while len(self.recv_buffer) > 5:
-                if ord(self.recv_buffer[0]) != 0x17:
+                if ord(self.recv_buffer[0]) != 0x17 or ord(self.recv_buffer[1]) != 0x3 or ord(self.recv_buffer[2]) != 0x3:
                     logging.info("data = %s" % (binascii.hexlify(self.recv_buffer)))
                     raise Exception('server_decode appdata error')
                 size = struct.unpack('>H', self.recv_buffer[3:5])[0]

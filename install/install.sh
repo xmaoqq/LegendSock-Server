@@ -15,10 +15,10 @@ if [ -d "/usr/local/legendsock" ]; then
 fi
 
 # 检查是否 CentOS
-if [ "`cat /etc/redhat-release 2>/dev/null| cut -d\  -f1`" != "CentOS" ]; then
-  echo "Error: The current system is not CentOS";
-  exit 1;
-fi
+# if [ "`cat /etc/redhat-release 2>/dev/null| cut -d\  -f1`" != "CentOS" ]; then
+#   echo "Error: The current system is not CentOS";
+#   exit 1;
+# fi
 
 # 输出带颜色的文字
 Color_Text()
@@ -125,9 +125,23 @@ echo "Install boot file..."
 mv /usr/local/legendsock/legendsock /usr/bin/legendsock;
 
 echo "Install tar, wget, m2crypto, python-setuptools...";
-yum install tar wget m2crypto python-setuptools -y
+yum install tar wget m2crypto python-setuptools gcc -y
 easy_install pip
 pip install cymysql
+
+echo "Clear the iptables...";
+iptables -F
+service iptables save
+
+echo "Install Chacha20...";
+cd /usr/local/legendsock/libsodium;
+./configure
+make && make install
+echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
+ldconfig
+
+echo "Starting LegendSock Server...";
+/usr/bin/legendsock start
 
 clear
 Echo_Blue "LegendSock has been installed, enjoy it!";

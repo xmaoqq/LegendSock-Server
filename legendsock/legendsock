@@ -50,6 +50,6 @@ case "${1}" in
         legendsock_status
         ;;
     *)
-        echo "Usage: lnmp {start|stop|restart|status}";
+        echo "Usage: legendsock {start|stop|restart|status}";
 esac
 exit

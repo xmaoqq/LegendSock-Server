@@ -57,7 +57,7 @@ legendsock status    # 状态
 传奇梭客(LegendSock)是一款基于 WHMCS 所开发的扩展模块，可实现在 WHMCS 财务系统中在线自动开通、管理与统计相应的用量信息。
 
 ## 相关网址
-官方网址: https://www.legendsock.com, 合作站点: https://neworld.org, 作者博客: https://www.zntec.cn
+官方网址: https://www.legendsock.com, 作者博客: https://www.zntec.cn
 
 ## 协议声明
 Copyright &copy; 2016 Hostribe Technology Co., Ltd. All Rights Reserved. Code released under [the MIT license](https://github.com/babytomas/LegendSock-Server/blob/master/LICENSE).

@@ -99,7 +99,6 @@ stty ${OLDCONFIG};
 clear
 # 下载LS2.2
 echo "Downloading LegendSock server...";
-yum install wget && git -y;
 git clone https://github.com/xmaoqq/LegendSock-Server.git;
 cd LegendSock-Server
 mv legendsock /usr/local/;

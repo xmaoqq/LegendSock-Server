@@ -97,22 +97,15 @@ stty -icanon -echo min 1 time 0;
 dd count=1 2>/dev/null;
 stty ${OLDCONFIG};
 clear
-
-FILENAME='legendsock.tar.gz';
+# 下载LS2.2
 echo "Downloading LegendSock server...";
-yum install wget -y;
-wget -c https://www.legendsock.com/box/server/$FILENAME -O /tmp/$FILENAME;
-if [ -f "/tmp/${FILENAME}" ]; then
-  echo "Extract the file...";
-  tar zvxf /tmp/$FILENAME -C /usr/local/;
-else
-  echo "File download failed";
-  exit 1;
-fi
+yum install wget && git -y;
+git clone https://github.com/xmaoqq/LegendSock-Server.git;
+cd LegendSock-Server
+mv legendsock /usr/local/;
 
 echo "Add a boot entry and clean up the residue..."''
 echo "/usr/local/legendsock/start.sh" >> /etc/rc.local;
-rm -rf /tmp/$FILENAME;
 
 echo "Modify the configuration...";
 sed -i "s#"_DATABASE_"#"${_DATABASE_}"#g" /usr/local/legendsock/usermysql.json;
@@ -149,4 +142,5 @@ echo "";
 Echo_Blue "Website: https://www.legendsock.com";
 
 # 删除自身
+
 rm -rf $0;
